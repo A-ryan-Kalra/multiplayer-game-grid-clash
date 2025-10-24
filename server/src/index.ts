@@ -14,33 +14,43 @@ app.get("/health", (req, res, next) => {
   res.json({ message: "Working" });
 });
 
-const rooms = new Map<string, Set<WebSocket>>();
+type Member = { socket: WebSocket; userName: string };
+
+const rooms = new Map<string, Member[]>();
 
 wss.on("connection", (ws: WebSocket, req) => {
-  let splitRooms = req.url?.split("/");
-  const roomNo: string = splitRooms?.[
-    splitRooms?.length - 1
-  ].toString() as string;
+  const url = new URL(req.url as string, `http://${req.headers.host}`);
+  const roomUrl = url.pathname?.split("/").splice(1);
+  const roomNo = roomUrl.pop()?.toString() as string;
+  const userName = url.searchParams.get("name") as string;
 
   if (!rooms.has(roomNo)) {
-    rooms.set(roomNo, new Set());
+    rooms.set(roomNo, []);
   }
-  rooms.get(roomNo)?.add(ws);
-  console.log(`roomName: ${roomNo} +1  (total: ${rooms?.get(roomNo)?.size})`);
+  const members = rooms.get(roomNo);
+  const me: Member = { socket: ws, userName };
+  members?.push(me);
 
   ws.on("message", (data) => {
-    console.log("MEssage", data.toString());
+    if (url.pathname.startsWith("/enter")) {
+      members?.forEach((client) => {
+        if (client.socket !== ws && client.userName !== userName) {
+          client.socket.send(data.toString());
+          ws.send(JSON.stringify({ userName: client.userName }));
+        }
+      });
+    }
   });
 
   ws.on("close", (close) => {
-    console.log("closed", close);
-    console.log("------------");
-    const set = rooms.get(roomNo);
-    set?.delete(ws);
-    if (set?.size === 0) rooms.delete(roomNo);
-    console.log(`roomName: ${roomNo} -1 (total: ${rooms?.get(roomNo)?.size})`);
+    const idx = members?.findIndex((item) => item.socket === ws);
+    if (idx !== -1) {
+      console.log("idx", idx);
+      members?.splice(idx as number, 1);
+    }
+    if (members?.length === 0) rooms.delete(roomNo);
+    console.log(`[${roomNo}] - (${userName}) (total: ${members?.length})`);
   });
-  //   console.log("rooms", rooms.get("1"));
 });
 
 const PORT = process.env.PORT || 8000;
