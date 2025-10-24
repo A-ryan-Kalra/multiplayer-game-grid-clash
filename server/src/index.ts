@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 const app = express();
 
 cors({ origin: "*" });
@@ -14,7 +14,7 @@ app.get("/health", (req, res, next) => {
   res.json({ message: "Working" });
 });
 
-const rooms = new Map<string, WebSocket>();
+const rooms = new Map<string, Set<WebSocket>>();
 
 wss.on("connection", (ws: WebSocket, req) => {
   let splitRooms = req.url?.split("/");
@@ -23,9 +23,23 @@ wss.on("connection", (ws: WebSocket, req) => {
   ].toString() as string;
 
   if (!rooms.has(roomNo)) {
-    rooms.set(roomNo, ws);
+    rooms.set(roomNo, new Set());
   }
-  rooms.get(roomNo);
+  rooms.get(roomNo)?.add(ws);
+  console.log(`roomName: ${roomNo} +1  (total: ${rooms?.get(roomNo)?.size})`);
+
+  ws.on("message", (data) => {
+    console.log("MEssage", data.toString());
+  });
+
+  ws.on("close", (close) => {
+    console.log("closed", close);
+    console.log("------------");
+    const set = rooms.get(roomNo);
+    set?.delete(ws);
+    if (set?.size === 0) rooms.delete(roomNo);
+    console.log(`roomName: ${roomNo} -1 (total: ${rooms?.get(roomNo)?.size})`);
+  });
   //   console.log("rooms", rooms.get("1"));
 });
 
