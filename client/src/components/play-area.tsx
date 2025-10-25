@@ -10,9 +10,16 @@ function PlayArea() {
 
   console.log(userSockets);
   useEffect(() => {
-    const socket = new WebSocket(`${WS_URL}/enter/room/1?name=aryan${unique}`);
+    const userSocket = new WebSocket(
+      `${WS_URL}/enter/room/1?name=Aryan${unique}`
+    );
+    const userCursorSocket = new WebSocket(
+      `${WS_URL}/cursor/room/1?name=Aryan${unique}`
+    );
 
-    socketProvider.set("user", socket);
+    socketProvider.set("user", userSocket);
+    socketProvider.set("cursor", userCursorSocket);
+
     // setUserSockets(
     //   (prev: UserProps[] | undefined) =>
     //     [
@@ -21,28 +28,57 @@ function PlayArea() {
     //     ] as UserProps[]
     // );
 
-    console.log(socketProvider.get("user"));
-    console.log(socket.readyState);
+    // console.log(socketProvider.get("user"));
+    // console.log(socket.readyState);
+    console.log(`Aryan${unique}`);
 
-    socket.addEventListener("open", (data) => {
-      console.log(data);
-      socket.send(JSON.stringify({ userName: `Hello From Aryan ` + unique }));
+    userSocket.addEventListener("open", () => {
+      userSocket.send(JSON.stringify({ userName: `Aryan` + unique }));
     });
-    socket.addEventListener("message", (data) => {
+    userCursorSocket.addEventListener("open", () => {
+      console.log("EstablishedUser Cursor SOcker operations");
+    });
+    userSocket.addEventListener("message", (data) => {
       const parsedData = JSON.parse(data.data);
-      console.log("User: ", parsedData);
-      setUserSockets((prev: UserProps[] | undefined) => [
-        ...(prev || []),
-        parsedData,
-      ]);
+
+      if (parsedData?.exit && parsedData?.event !== "cursor") {
+        setUserSockets((prev: UserProps[] | undefined) => {
+          const updatedMember = prev?.filter(
+            (user) => user.userName !== parsedData?.userName
+          );
+
+          return updatedMember;
+        });
+      } else if (parsedData?.event === "cursor") {
+        console.log(parsedData);
+      } else {
+        setUserSockets((prev: UserProps[] | undefined) => [
+          ...(prev || []),
+          parsedData,
+        ]);
+      }
     });
+    userCursorSocket.addEventListener("message", (data) => {
+      const parsedData = JSON.parse(data.data);
+
+      console.log(parsedData);
+    });
+
+    function handleMouseMove(e: MouseEvent) {
+      // console.log({ x: e.clientX, y: e.clientY });
+      userCursorSocket.send(
+        JSON.stringify({ x: e.clientX, y: e.clientY, event: "cursor" })
+      );
+    }
+    window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
-      socket.close();
+      userSocket.close();
+      userCursorSocket.close();
+      window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
-  console.log("socketProvider", socketProvider);
   return (
     <div className="w-full h-full">
       <h1>Hello</h1>
