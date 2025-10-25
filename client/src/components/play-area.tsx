@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSocket } from "../services/use-socket-provider";
 import { type UserProps } from "../type";
 import UsersCursorMovement from "./user-cursor-movement";
+import CursorMovement from "./cursor-movement";
 const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000";
 
 function PlayArea() {
   const { socketProvider } = useSocket();
   const [userSockets, setUserSockets] = useState<UserProps[]>();
   const unique = Date.now().toString().slice(-3);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const userSocket = new WebSocket(
@@ -90,6 +92,10 @@ function PlayArea() {
           cursorStyle: "purple",
         })
       );
+      cursorRef.current!.style.transform = `translate(${e.clientX - 5}px, ${
+        e.clientY
+      }px)`;
+      cursorRef.current!.style.backgroundColor = `red`;
     }
     window.addEventListener("mousemove", handleMouseMove);
 
@@ -102,7 +108,8 @@ function PlayArea() {
   console.log(userSockets);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full cursor-none">
+      <CursorMovement ref={cursorRef} />
       {userSockets?.map((user: UserProps, index: number) => (
         <UsersCursorMovement {...user} key={index} />
       ))}
