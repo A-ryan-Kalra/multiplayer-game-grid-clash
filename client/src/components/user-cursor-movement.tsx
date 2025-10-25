@@ -19,8 +19,8 @@ function UsersCursorMovement({
         zIndex: 999999,
         cursor: "none",
         // transition: "transform 0.04s ease-in-out",
-        transform: `translate(${((x - 18) / width) * window.innerWidth}px, ${
-          ((y - 24) / height) * window.innerHeight
+        transform: `translate(${((x - 17) / width) * window.innerWidth}px, ${
+          ((y - 25) / height) * window.innerHeight
         }px)`,
       }}
     >

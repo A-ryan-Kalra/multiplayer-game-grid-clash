@@ -20,4 +20,5 @@ export interface GridLayoutProps {
   userName: string;
   event: string;
   position: number;
+  timestamp: number;
 }

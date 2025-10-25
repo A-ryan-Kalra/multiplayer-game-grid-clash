@@ -10,6 +10,12 @@ export function brodCastMessage(
   userName: string,
   url: URL
 ) {
+  if (url.pathname.startsWith("/grid-info")) {
+    members?.forEach((client) => {
+      client.socket.send(data.toString());
+    });
+    return;
+  }
   members?.forEach((client) => {
     if (client.socket !== ws && client.userName !== userName) {
       client.socket.send(data.toString());
