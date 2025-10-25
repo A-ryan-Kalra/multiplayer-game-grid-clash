@@ -1,3 +1,17 @@
 export interface UserProps {
-  userName: "";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  userName: string;
+  cursorStyle: string;
+}
+
+export interface CursorMovementProps {
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  userName: string;
+  cursorStyle: string;
 }
