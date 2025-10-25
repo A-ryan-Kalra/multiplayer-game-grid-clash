@@ -5,7 +5,7 @@ function CursorMovement({ ref }: { ref: Ref<HTMLDivElement> }) {
     <div
       ref={ref}
       style={{
-        WebkitMaskImage: "url('/pointer.svg')",
+        WebkitMaskImage: "url('/cursor.svg')",
         WebkitMaskRepeat: "no-repeat",
         WebkitMaskSize: "contain",
         position: "fixed",

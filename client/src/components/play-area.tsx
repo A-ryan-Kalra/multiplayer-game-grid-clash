@@ -169,12 +169,29 @@ function PlayArea() {
   // console.log(userSockets);
 
   return (
-    <div className="w-full h-full cursor-none">
+    <div className="w-full h-full flex cursor-none">
+      <div className="relative w-full flex gap-y-2 flex-col h-full bg-amber-200 border-r border-r-slate-900 flex-1">
+        <h1 className="text-3xl p-1 w-full text-white font-semibold text-center bg-orange-400">
+          Participants{" "}
+          <span className="px-2  bg-amber-100 text-green-600 w-fit h-fit text-2xl text-center">
+            {userSockets?.length}
+          </span>
+        </h1>
+
+        <div className="flex flex-col w-full relative left-2">
+          {userSockets?.map((player) => (
+            <div className="flex items-center gap-x-1">
+              <span className="bg-[#3fba6e] w-1 p-1 h-1 rounded-full"></span>
+              <p> {player.userName}</p>
+            </div>
+          ))}
+        </div>
+      </div>
       <CursorMovement ref={cursorRef} />
       {userSockets?.map((user: UserProps, index: number) => (
         <UsersCursorMovement {...user} key={index} />
       ))}
-      <div className="flex  h-full w-full items-center justify-center p-1">
+      <div className="flex-3 flex relative h-full w-full items-center justify-center p-1">
         <div className="w-full grid-cols-10 grid mx-auto min-h-[620px]  max-w-[720px] gap-1">
           {gridInfo.map((item, index) => (
             <Grids

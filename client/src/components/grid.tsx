@@ -30,13 +30,12 @@ function Grids({ position, data, userName }: GridLayoutProps) {
     const value = e.target.value;
     copyValue.current = value;
     gridRef.current!.value = value;
-    console.log("vvvvv value", value);
 
     //   e.target.value.length > 1 ? e.target.value.slice(1) : e.target.value;
 
     // e.target.value = "";
     setValue(value);
-    console.log(value);
+
     gridRef.current?.blur();
     const gridSocketProvider = socketProvider.get("grid-info");
 
