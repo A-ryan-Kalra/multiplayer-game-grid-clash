@@ -14,9 +14,10 @@ function PlayArea() {
   const [gridInfo, setGridInfo] = useState(
     Array.from({ length: 100 }, (_, index) => ({
       data: "",
-      userName: `Aryan${unique}`,
+      userName: ``,
       event: "grid",
       position: index,
+      timestamp: Date.now(),
     }))
   );
   // console.log(socketProvider);
@@ -58,7 +59,7 @@ function PlayArea() {
 
     userSocket.addEventListener("message", (data) => {
       const parsedData = JSON.parse(data.data);
-
+      console.log("Message User");
       if (parsedData?.exit && parsedData?.event !== "cursor") {
         setUserSockets((prev: UserProps[] | undefined) => {
           const updatedMember = prev?.filter(
@@ -110,19 +111,29 @@ function PlayArea() {
       console.log(parsedData);
       if (parsedData.event === "grid") {
         setGridInfo((prev: GridLayoutProps[]) => {
-          let updatedUser: number = prev?.findIndex(
-            (user: GridLayoutProps) => user.position === parsedData.position
+          let updatedGrid: number = prev?.findIndex(
+            (grid: GridLayoutProps) => grid.position === parsedData.position
           ) as number;
-          console.log("updatedUser", updatedUser);
 
-          const newUser = [...prev];
-          newUser[updatedUser] = parsedData;
-          // console.log("prev", prev);
-          return newUser;
+          const newGrid = [...prev];
+          const prevUser = newGrid[updatedGrid].userName;
+          const prevData = newGrid[updatedGrid].data;
 
-          // else {
-          //   return [...prev, parsedData];
-          // }
+          const isSecondPassed =
+            parsedData?.timestamp - (newGrid[updatedGrid].timestamp as number) <
+              3000 && prevUser !== parsedData?.userName;
+
+          if (prevUser && prevData && isSecondPassed) {
+            newGrid[updatedGrid] = {
+              ...parsedData,
+              userName: prevUser + "," + parsedData?.userName,
+              data: prevData + "," + parsedData?.data,
+            };
+          } else {
+            newGrid[updatedGrid] = parsedData;
+          }
+
+          return newGrid;
         });
       }
     });
@@ -140,8 +151,8 @@ function PlayArea() {
           cursorStyle: "purple",
         })
       );
-      cursorRef.current!.style.transform = `translate(${e.clientX - 5}px, ${
-        e.clientY
+      cursorRef.current!.style.transform = `translate(${e.clientX - 6}px, ${
+        e.clientY - 1
       }px)`;
       cursorRef.current!.style.backgroundColor = `red`;
     }
@@ -152,6 +163,7 @@ function PlayArea() {
       gridInfoSocket.close();
       userCursorSocket.close();
       window.removeEventListener("mousemove", handleMouseMove);
+      localStorage.removeItem("pause");
     };
   }, []);
   // console.log(userSockets);
@@ -166,6 +178,7 @@ function PlayArea() {
         <div className="w-full grid-cols-10 grid mx-auto min-h-[620px]  max-w-[720px] gap-1">
           {gridInfo.map((item, index) => (
             <Grids
+              timestamp={item.timestamp}
               event="grid"
               userName={item.userName}
               data={item.data}
