@@ -4,6 +4,8 @@ import { type GridLayoutProps, type UserProps } from "../type";
 import UsersCursorMovement from "./user-cursor-movement";
 import CursorMovement from "./cursor-movement";
 import Grids from "./grid";
+import Sidebar from "./sidebar";
+import MobileSidbar from "./mobile-sidebar";
 const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000";
 
 function PlayArea() {
@@ -169,29 +171,17 @@ function PlayArea() {
   // console.log(userSockets);
 
   return (
-    <div className="w-full h-full flex cursor-none">
-      <div className="relative w-full flex gap-y-2 flex-col h-full bg-amber-200 border-r border-r-slate-900 flex-1">
-        <h1 className="text-3xl p-1 w-full text-white font-semibold text-center bg-orange-400">
-          Participants{" "}
-          <span className="px-2  bg-amber-100 text-green-600 w-fit h-fit text-2xl text-center">
-            {userSockets?.length}
-          </span>
-        </h1>
-
-        <div className="flex flex-col w-full relative left-2">
-          {userSockets?.map((player) => (
-            <div className="flex items-center gap-x-1">
-              <span className="bg-[#3fba6e] w-1 p-1 h-1 rounded-full"></span>
-              <p> {player.userName}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+    <div className="w-full h-full flex bg-amber-100/70 backdrop-blur-sm cursor-none">
+      <Sidebar userSockets={userSockets || []} />
       <CursorMovement ref={cursorRef} />
       {userSockets?.map((user: UserProps, index: number) => (
         <UsersCursorMovement {...user} key={index} />
       ))}
-      <div className="flex-3 flex relative h-full w-full items-center justify-center p-1">
+      <div className="flex-3 flex relative flex-col gap-y-5 h-full w-full items-center  p-1">
+        <h1 className="md:text-2xl text-lg font-semibold">
+          🧩 GRID CLASH ⚔️ | 10x10 Multiplayer Arena
+        </h1>
+        <h1 className="text-xl ">Add emojis to the box</h1>
         <div className="w-full grid-cols-10 grid mx-auto min-h-[620px]  max-w-[720px] gap-1">
           {gridInfo.map((item, index) => (
             <Grids
@@ -204,6 +194,7 @@ function PlayArea() {
             />
           ))}
         </div>
+        <MobileSidbar userSockets={userSockets || []} />
       </div>
     </div>
   );
