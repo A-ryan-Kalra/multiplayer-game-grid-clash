@@ -5,9 +5,9 @@ import App from "./App.tsx";
 import { SocketProvider } from "./services/use-socket-provider.tsx";
 
 createRoot(document.getElementById("root")!).render(
-  <>
+  <StrictMode>
     <SocketProvider>
       <App />
     </SocketProvider>
-  </>
+  </StrictMode>
 );
