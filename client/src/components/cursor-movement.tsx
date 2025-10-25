@@ -14,7 +14,7 @@ function CursorMovement({ ref }: { ref: Ref<HTMLDivElement> }) {
         backgroundSize: "contain",
         backgroundPosition: "center",
         zIndex: 999999,
-
+        pointerEvents: "none",
         width: "25px",
         height: "25px",
       }}

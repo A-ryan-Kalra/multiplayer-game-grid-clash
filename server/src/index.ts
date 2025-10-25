@@ -22,6 +22,7 @@ app.get("/health", (req, res, next) => {
 
 const rooms: SocketType = new Map<string, Member[]>();
 const cursors: SocketType = new Map<string, Member[]>();
+const grid: SocketType = new Map<string, Member[]>();
 
 wss.on("connection", (ws: WebSocket, req) => {
   const url = new URL(req.url as string, `http://${req.headers.host}`);
@@ -29,25 +30,30 @@ wss.on("connection", (ws: WebSocket, req) => {
   const roomNo = roomUrl.pop()?.toString() as string;
   const userName = url.searchParams.get("name") as string;
 
-  if (!rooms.has(roomNo) || !cursors) {
+  if (!rooms.has(roomNo) || !cursors || !grid) {
     rooms.set(roomNo, []);
     cursors.set(roomNo, []);
+    grid.set(roomNo, []);
   }
   const members = rooms.get(roomNo);
   const cursorMembers = cursors.get(roomNo);
+  const gridInfoMembers = grid.get(roomNo);
   const me: Member = { socket: ws, userName };
 
   if (url.pathname.startsWith("/enter")) members?.push(me);
   if (url.pathname.startsWith("/cursor")) cursorMembers?.push(me);
+  if (url.pathname.startsWith("/grid-info")) gridInfoMembers?.push(me);
 
   ws.on("message", (data) => {
-    console.log("url.pathname", url.pathname);
+    // console.log("url.pathname", url.pathname);
 
     if (url.pathname.startsWith("/enter")) {
       //   console.log("enter");
 
       brodCastMessage(members || [], ws, data.toString(), userName, url);
     } else if (url.pathname.startsWith("/cursor")) {
+      brodCastMessage(cursorMembers || [], ws, data.toString(), userName, url);
+    } else if (url.pathname.startsWith("/grid-info")) {
       brodCastMessage(cursorMembers || [], ws, data.toString(), userName, url);
     }
   });
