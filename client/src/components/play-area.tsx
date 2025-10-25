@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSocket } from "../services/use-socket-provider";
-import { type UserProps } from "../type";
+import { type GridLayoutProps, type UserProps } from "../type";
 import UsersCursorMovement from "./user-cursor-movement";
 import CursorMovement from "./cursor-movement";
 import Grids from "./grid";
@@ -11,8 +11,16 @@ function PlayArea() {
   const [userSockets, setUserSockets] = useState<UserProps[]>();
   const unique = Date.now().toString().slice(-3);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const [gridInfo, setGridInfo] = useState(Array.from({ length: 100 }));
-  console.log(socketProvider);
+  const [gridInfo, setGridInfo] = useState(
+    Array.from({ length: 100 }, (_, index) => ({
+      data: "",
+      userName: `Aryan${unique}`,
+      event: "grid",
+      position: index,
+    }))
+  );
+  // console.log(socketProvider);
+  // console.log(gridInfo);
 
   useEffect(() => {
     const userSocket = new WebSocket(
@@ -25,9 +33,18 @@ function PlayArea() {
       `${WS_URL}/grid-info/room/1?name=Aryan${unique}`
     );
 
-    socketProvider.set("user", userSocket);
-    socketProvider.set("cursor", userCursorSocket);
-    socketProvider.set("grid-info", gridInfoSocket);
+    socketProvider.set("user", {
+      socket: userSocket,
+      userName: `Aryan${unique}`,
+    });
+    socketProvider.set("cursor", {
+      socket: userCursorSocket,
+      userName: `Aryan${unique}`,
+    });
+    socketProvider.set("grid-info", {
+      socket: gridInfoSocket,
+      userName: `Aryan${unique}`,
+    });
 
     console.log(`Aryan${unique}`);
 
@@ -71,9 +88,6 @@ function PlayArea() {
       // console.log(parsedData);
       if (parsedData.event === "cursor") {
         setUserSockets((prev: UserProps[] | undefined) => {
-          // const updatedMember = prev?.filter(
-          //   (user) => user.userName !== parsedData?.userName
-          // );
           let updatedUser: number = prev?.findIndex(
             (user) => user.userName === parsedData.userName
           ) as number;
@@ -86,6 +100,29 @@ function PlayArea() {
           } else {
             return [...(prev as UserProps[]), parsedData];
           }
+        });
+      }
+    });
+
+    gridInfoSocket.addEventListener("message", (data) => {
+      const parsedData = JSON.parse(data.data);
+
+      console.log(parsedData);
+      if (parsedData.event === "grid") {
+        setGridInfo((prev: GridLayoutProps[]) => {
+          let updatedUser: number = prev?.findIndex(
+            (user: GridLayoutProps) => user.position === parsedData.position
+          ) as number;
+          console.log("updatedUser", updatedUser);
+
+          const newUser = [...prev];
+          newUser[updatedUser] = parsedData;
+          // console.log("prev", prev);
+          return newUser;
+
+          // else {
+          //   return [...prev, parsedData];
+          // }
         });
       }
     });
@@ -117,7 +154,7 @@ function PlayArea() {
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
-  console.log(userSockets);
+  // console.log(userSockets);
 
   return (
     <div className="w-full h-full cursor-none">
@@ -127,8 +164,14 @@ function PlayArea() {
       ))}
       <div className="flex  h-full w-full items-center justify-center p-1">
         <div className="w-full grid-cols-10 grid mx-auto min-h-[620px]  max-w-[720px] gap-1">
-          {gridInfo.map((_, index) => (
-            <Grids index={index} key={index} />
+          {gridInfo.map((item, index) => (
+            <Grids
+              event="grid"
+              userName={item.userName}
+              data={item.data}
+              position={item.position}
+              key={index}
+            />
           ))}
         </div>
       </div>

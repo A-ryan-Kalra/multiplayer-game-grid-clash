@@ -45,6 +45,7 @@ wss.on("connection", (ws: WebSocket, req) => {
   if (url.pathname.startsWith("/grid-info")) gridInfoMembers?.push(me);
 
   ws.on("message", (data) => {
+    // console.log("data", data?.toString());
     // console.log("url.pathname", url.pathname);
 
     if (url.pathname.startsWith("/enter")) {
@@ -54,7 +55,13 @@ wss.on("connection", (ws: WebSocket, req) => {
     } else if (url.pathname.startsWith("/cursor")) {
       brodCastMessage(cursorMembers || [], ws, data.toString(), userName, url);
     } else if (url.pathname.startsWith("/grid-info")) {
-      brodCastMessage(cursorMembers || [], ws, data.toString(), userName, url);
+      brodCastMessage(
+        gridInfoMembers || [],
+        ws,
+        data.toString(),
+        userName,
+        url
+      );
     }
   });
 
@@ -63,6 +70,8 @@ wss.on("connection", (ws: WebSocket, req) => {
       closeConnection(members || [], userName, ws, roomNo, rooms);
     } else if (url.pathname.startsWith("/cursor")) {
       closeConnection(cursorMembers || [], userName, ws, roomNo, rooms);
+    } else if (url.pathname.startsWith("/grid-info")) {
+      closeConnection(gridInfoMembers || [], userName, ws, roomNo, rooms);
     }
   });
 });

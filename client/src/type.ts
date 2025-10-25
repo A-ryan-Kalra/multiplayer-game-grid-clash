@@ -15,3 +15,9 @@ export interface CursorMovementProps {
   userName: string;
   cursorStyle: string;
 }
+export interface GridLayoutProps {
+  data: string;
+  userName: string;
+  event: string;
+  position: number;
+}
