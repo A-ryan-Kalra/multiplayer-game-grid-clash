@@ -22,3 +22,7 @@ export interface GridLayoutProps {
   position: number;
   timestamp: number;
 }
+
+export interface UserPopoverProps {
+  names: string;
+}

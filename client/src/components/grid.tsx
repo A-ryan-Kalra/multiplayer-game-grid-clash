@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useSocket } from "../services/use-socket-provider";
 import type { GridLayoutProps } from "../type";
+import UserPopover from "./user-popover";
 
 function Grids({ position, data, userName }: GridLayoutProps) {
   const [value, setValue] = useState<string>("");
@@ -56,17 +57,21 @@ function Grids({ position, data, userName }: GridLayoutProps) {
   };
 
   useEffect(() => {
-    if (data) setValue(data);
+    if (data) {
+      setValue(data);
+      console.log("userName", userName);
+    }
   }, [data]);
   // console.log("data", data);
   return (
     <div
       key={position}
-      className={`border-gray-500 w-full h-full hover:opacity-60 text-2xl text-center  border-2 p-1 ${
+      className={`relative border-gray-500 w-full h-full hover:opacity-60 text-2xl text-center  border-2 p-1 ${
         userName ? "bg-amber-300" : "bg-amber-200"
       }`}
     >
       {/* {index + 1} */}
+      {userName && <UserPopover names={userName} />}
       <input
         value={value}
         onFocus={(e) => {
