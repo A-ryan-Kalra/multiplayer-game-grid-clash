@@ -11,8 +11,8 @@ function Sidebar({ userSockets }: { userSockets: UserProps[] | [] }) {
       </h1>
 
       <div className="flex flex-col w-full gap-y-1 relative left-2">
-        {userSockets?.map((player) => (
-          <div className="flex items-center gap-x-1">
+        {userSockets?.map((player, index) => (
+          <div key={index} className="flex items-center gap-x-1">
             <span className="bg-[#3fba6e] w-1 p-1 h-1 rounded-full"></span>
             <p className="font-mono text-sm  font-semibold">
               {player.userName}
