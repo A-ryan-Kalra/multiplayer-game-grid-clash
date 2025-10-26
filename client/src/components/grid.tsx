@@ -65,7 +65,7 @@ function Grids({ position, data, userName }: GridLayoutProps) {
   return (
     <div
       key={position}
-      className={`relative border-gray-500 w-full h-full hover:opacity-60 text-2xl text-center  border-2 p-1 ${
+      className={`relative rounded-sm border-gray-500 w-full h-full hover:opacity-60 text-2xl text-center  border-2 p-1 ${
         userName ? "bg-amber-300" : "bg-amber-200"
       }`}
     >
