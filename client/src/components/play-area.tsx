@@ -7,23 +7,31 @@ import CursorMovement from "./cursor-movement";
 import Sidebar from "./sidebar";
 
 import GridLayout from "./grid-layout";
-const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000";
+import { useParams, useSearchParams } from "react-router-dom";
+const WS_URL = import.meta.env.VITE_WS_URL || "localhost:8000";
 
 function PlayArea() {
+  const roomNo = useParams()?.roomId ?? 1;
+  const [searchParams] = useSearchParams();
+  const unique = searchParams.get("accessId");
+
   const { socketProvider } = useSocket();
   const [userSockets, setUserSockets] = useState<UserProps[]>();
-  const unique = Date.now().toString().slice(-3);
+  // const unique = Date.now().toString().slice(-3);
   const cursorRef = useRef<HTMLDivElement>(null);
 
   // console.log(socketProvider);
   // console.log(gridInfo);
 
   useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const userSocket = new WebSocket(
-      `${WS_URL}/enter/room/1?name=Aryan${unique}`
+      `${protocol}://${WS_URL}/enter/room/${roomNo}?name=Aryan${unique}`
+      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/enter/room/${roomNo}?name=Aryan${unique}`
     );
     const userCursorSocket = new WebSocket(
-      `${WS_URL}/cursor/room/1?name=Aryan${unique}`
+      `${protocol}://${WS_URL}/cursor/room/${roomNo}?name=Aryan${unique}`
+      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/cursor/room/${roomNo}?name=Aryan${unique}`
     );
 
     socketProvider.set("user", {
@@ -113,10 +121,21 @@ function PlayArea() {
     }
     window.addEventListener("mousemove", handleMouseMove);
 
+    function handleResize() {
+      if (window.matchMedia("(pointer: coarse)").matches) {
+        console.log("wowowo");
+        cursorRef.current!.style.display = "none";
+      } else {
+        cursorRef.current!.style.display = "block";
+      }
+    }
+    // handleResize();
+    window.addEventListener("resize", handleResize);
+
     return () => {
       userSocket.close();
-
       userCursorSocket.close();
+      window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       localStorage.removeItem("pause");
     };

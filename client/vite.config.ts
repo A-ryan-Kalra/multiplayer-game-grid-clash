@@ -7,9 +7,22 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   // server: {
   //   proxy: {
-  //     "/api": {
-  //       target: "http://localhost:3000",
+  //     "/enter": {
+  //       target: "ws://localhost:8000",
   //       changeOrigin: true,
+  //       ws: true,
+  //       secure: false,
+  //     },
+  //     "/grid-info": {
+  //       target: "ws://localhost:8000",
+  //       changeOrigin: true,
+  //       ws: true,
+  //       secure: false,
+  //     },
+  //     "/cursor": {
+  //       target: "ws://localhost:8000",
+  //       changeOrigin: true,
+  //       ws: true,
   //       secure: false,
   //     },
   //   },

@@ -19,7 +19,7 @@ const wss = new WebSocketServer({ server });
 app.get("/health", (req, res, next) => {
   res.json({ message: "Working" });
 });
-
+// app.use(express.static("public"));
 const rooms: SocketType = new Map<string, Member[]>();
 const cursors: SocketType = new Map<string, Member[]>();
 const grid: SocketType = new Map<string, Member[]>();

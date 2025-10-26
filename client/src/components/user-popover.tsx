@@ -19,7 +19,7 @@ function UserPopover({ names }: UserPopoverProps) {
         </PopoverTrigger>
         <PopoverContent className="text-xs w-fit cursor-default p-1 m-0 flex flex-col gap-y-1">
           {userNames?.map((name, index) => (
-            <span>
+            <span key={index}>
               {index + 1}. {name}
             </span>
           ))}

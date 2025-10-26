@@ -3,11 +3,15 @@ import type { GridLayoutProps, UserProps } from "@/type";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import Grids from "./grid";
 import MobileSidbar from "./mobile-sidebar";
+import { useParams, useSearchParams } from "react-router-dom";
 
 const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000";
 
 function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
-  const unique = Date.now().toString().slice(-3);
+  const roomNo = useParams()?.roomId ?? 1;
+  const [searchParams] = useSearchParams();
+  const unique = searchParams.get("accessId");
+
   const { socketProvider } = useSocket();
   const firstTimeStamp = useRef<number>(0);
   const lastTimeStamp = useRef<number>(0);
@@ -43,8 +47,10 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   const [timeLine, setTimeLine] = useState<boolean>(false);
 
   useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const gridInfoSocket = new WebSocket(
-      `${WS_URL}/grid-info/room/1?name=Aryan${unique}`
+      `${protocol}://${WS_URL}/grid-info/room/${roomNo}?name=Aryan${unique}`
+      //   `wss://rn28c5qs-5173.inc1.devtunnels.ms/grid-info/room/${roomNo}?name=Aryan${unique}`
     );
     socketProvider.set("grid-info", {
       socket: gridInfoSocket,
