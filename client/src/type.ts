@@ -21,6 +21,7 @@ export interface GridLayoutProps {
   event: string;
   position: number;
   timestamp: number;
+  timeLine?: boolean;
 }
 
 export interface UserPopoverProps {

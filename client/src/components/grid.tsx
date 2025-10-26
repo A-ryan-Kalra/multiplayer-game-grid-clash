@@ -3,12 +3,13 @@ import { useSocket } from "../services/use-socket-provider";
 import type { GridLayoutProps } from "../type";
 import UserPopover from "./user-popover";
 
-function Grids({ position, data, userName }: GridLayoutProps) {
+function Grids({ position, data, userName, timeLine }: GridLayoutProps) {
   const [value, setValue] = useState<string>("");
   const copyValue = useRef<string>("");
 
   const gridRef = useRef<HTMLInputElement>(null);
   const { socketProvider } = useSocket();
+
   function isMinutePassed() {
     const now = Date.now();
     const lastSaved = Number(localStorage.getItem("pause"));
@@ -28,6 +29,11 @@ function Grids({ position, data, userName }: GridLayoutProps) {
     //   return;
     // }
     const value = e.target.value;
+    if ([...value].length !== 1) {
+      gridRef.current?.blur();
+      alert("Please enter only one character or emoji.");
+      return;
+    }
     copyValue.current = value;
     gridRef.current!.value = value;
 
@@ -56,12 +62,29 @@ function Grids({ position, data, userName }: GridLayoutProps) {
   };
 
   useEffect(() => {
-    if (data) {
-      setValue(data);
-      console.log("userName", userName);
-    }
+    // if (data) {
+    setValue(data);
+    // }
   }, [data]);
-  // console.log("data", data);
+
+  function handleClick(e: React.MouseEvent<HTMLInputElement>) {
+    if (timeLine) {
+      // setValue(copyValue.current);
+      gridRef.current?.blur();
+      alert("Please turn on the live mode to edit.");
+
+      return;
+    }
+    (e.target as HTMLInputElement).setSelectionRange(
+      (e.target as HTMLInputElement).value.length,
+      (e.target as HTMLInputElement).value.length
+    );
+    setValue((e.target as HTMLInputElement).value);
+    (e.target as HTMLInputElement).value = "";
+  }
+
+  // console.log("--------------");
+  // console.log("data", value);
   return (
     <div
       key={position}
@@ -74,18 +97,12 @@ function Grids({ position, data, userName }: GridLayoutProps) {
       <input
         value={value}
         onFocus={(e) => {
+          if (timeLine) return;
           copyValue.current = value;
           e.target.value = "";
         }}
         onBlur={() => setValue(copyValue.current)}
-        onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-          (e.target as HTMLInputElement).setSelectionRange(
-            (e.target as HTMLInputElement).value.length,
-            (e.target as HTMLInputElement).value.length
-          );
-          setValue((e.target as HTMLInputElement).value);
-          (e.target as HTMLInputElement).value = "";
-        }}
+        onClick={handleClick}
         ref={gridRef}
         // value={value}
         onChange={handleData}

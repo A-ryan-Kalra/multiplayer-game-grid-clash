@@ -4,7 +4,7 @@ import { Users } from "lucide-react";
 function MobileSidbar({ userSockets }: { userSockets: UserProps[] | [] }) {
   return (
     <Sheet>
-      <SheetTrigger className="bg-slate-300 p-2 lg:hidden rounded-full">
+      <SheetTrigger className="bg-slate-300 p-1 lg:hidden rounded-full">
         <Users />
       </SheetTrigger>
       <SheetContent>

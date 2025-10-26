@@ -124,13 +124,13 @@ function PlayArea() {
   // console.log(userSockets);
 
   return (
-    <div className="w-full h-full flex bg-amber-100/70 backdrop-blur-sm cursor-none">
+    <div className="w-full h-full flex overflow-x-hidden bg-amber-100/70 backdrop-blur-sm cursor-none">
       <Sidebar userSockets={userSockets || []} />
       <CursorMovement ref={cursorRef} />
       {userSockets?.map((user: UserProps, index: number) => (
         <UsersCursorMovement {...user} key={index} />
       ))}
-      <GridLayout />
+      <GridLayout userSockets={userSockets || []} />
     </div>
   );
 }
