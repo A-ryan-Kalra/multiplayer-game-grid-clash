@@ -13,6 +13,9 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   const lastTimeStamp = useRef<number>(0);
   const [isTimeLineOn, setIsTimeLineOn] = useState<boolean>(false);
   const recordGridDetails = useRef<GridLayoutProps[]>([]);
+  const [lastChangesOnGrid, setLastChangesOnGrid] = useState<string>("");
+  const timerRef = useRef<number | null>(null);
+
   const [gridInfo, setGridInfo] = useState(
     Array.from({ length: 100 }, (_, index) => ({
       data: "",
@@ -101,20 +104,23 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
     }));
 
   function handleTime(e: ChangeEvent<HTMLInputElement>) {
-    setTimeLine(true);
-
     const targetTime = Number(e.target.value);
     setValue(targetTime);
-    let base = newArray();
-    for (const e of recordGridDetails.current) {
-      if (e.timestamp > targetTime) break;
+    if (timerRef.current) clearTimeout(timerRef.current);
 
-      base[e.position] = e;
-    }
-    // console.log("newArray", base);
-    setSoftCopy(base);
+    timerRef.current = setTimeout(() => {
+      setTimeLine(true);
+      let base = newArray();
+      for (const e of recordGridDetails.current) {
+        if (e.timestamp > targetTime) break;
+        setLastChangesOnGrid(e.userName);
+        base[e.position] = e;
+      }
+      // console.log("newArray", base);
+      setSoftCopy(base);
+    }, 80);
   }
-
+  //   console.log("lastChanges", lastChangesOnGrid);
   return (
     <div className="flex-3 flex relative flex-col gap-y-3 py-2 h-full w-full items-center  p-1">
       <h1 className="md:text-2xl text-lg font-semibold">
@@ -135,16 +141,20 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
             />
           ))}
         </div>
-
+        {lastChangesOnGrid.trim() && (
+          <p>Review last changes made by: {lastChangesOnGrid}</p>
+        )}
         <div className="flex items-center gap-x-2 border-slate-400 border-[1px] p-1  rounded-md w-full justify-center">
           <button
+            disabled={recordGridDetails.current.length === 0}
             onClick={(e) => {
               e.stopPropagation();
               setTimeLine(false);
               setIsTimeLineOn((prev) => !prev);
               lastTimeStamp.current = Date.now();
+              if (timeLine) setLastChangesOnGrid("");
             }}
-            className="p-1.5 text-nowrap hover:opacity-70 cursor-none rounded-md bg-blue-300 text-sm"
+            className="p-1.5 text-nowrap disabled:opacity-50 hover:opacity-70 cursor-none rounded-md bg-blue-300 text-sm"
           >
             {!isTimeLineOn ? "Open Timeline" : "Live"}
           </button>
@@ -153,11 +163,8 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
             min={startTime - 1}
             max={endTime}
             value={value}
-            // defaultValue={5}
-            // max={30}
-            // onChange={(e) => console.log("e", e.target.value)}
             disabled={!isTimeLineOn}
-            // step={(endTime - startTime) / 100}
+            step={(endTime - startTime) / 100}
             onChange={handleTime}
             className="cursor-none w-full"
           />
