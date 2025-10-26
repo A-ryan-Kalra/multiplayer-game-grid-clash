@@ -11,6 +11,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   const roomNo = useParams()?.roomId ?? 1;
   const [searchParams] = useSearchParams();
   const unique = searchParams.get("accessId");
+  const name = searchParams.get("name");
 
   const { socketProvider } = useSocket();
   const firstTimeStamp = useRef<number>(0);
@@ -49,12 +50,12 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const gridInfoSocket = new WebSocket(
-      `${protocol}://${WS_URL}/grid-info/room/${roomNo}?name=Aryan${unique}`
-      //   `wss://rn28c5qs-5173.inc1.devtunnels.ms/grid-info/room/${roomNo}?name=Aryan${unique}`
+      `${protocol}://${WS_URL}/grid-info/room/${roomNo}?name=${name}${unique}`
+      //   `wss://rn28c5qs-5173.inc1.devtunnels.ms/grid-info/room/${roomNo}?name=${name}${unique}`
     );
     socketProvider.set("grid-info", {
       socket: gridInfoSocket,
-      userName: `Aryan${unique}`,
+      userName: `${name}${unique}`,
     });
 
     gridInfoSocket?.addEventListener("message", (data) => {
@@ -79,7 +80,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
 
           const isSecondPassed =
             parsedData?.timestamp - (newGrid[updatedGrid].timestamp as number) <
-              3000 && prevUser !== parsedData?.userName;
+              1000 && prevUser !== parsedData?.userName;
 
           if (prevUser && prevData && isSecondPassed) {
             newGrid[updatedGrid] = {

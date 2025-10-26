@@ -14,7 +14,7 @@ function PlayArea() {
   const roomNo = useParams()?.roomId ?? 1;
   const [searchParams] = useSearchParams();
   const unique = searchParams.get("accessId");
-
+  const name = searchParams.get("name");
   const { socketProvider } = useSocket();
   const [userSockets, setUserSockets] = useState<UserProps[]>();
   // const unique = Date.now().toString().slice(-3);
@@ -26,27 +26,27 @@ function PlayArea() {
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const userSocket = new WebSocket(
-      `${protocol}://${WS_URL}/enter/room/${roomNo}?name=Aryan${unique}`
-      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/enter/room/${roomNo}?name=Aryan${unique}`
+      `${protocol}://${WS_URL}/enter/room/${roomNo}?name=${name}${unique}`
+      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/enter/room/${roomNo}?name=${name}${unique}`
     );
     const userCursorSocket = new WebSocket(
-      `${protocol}://${WS_URL}/cursor/room/${roomNo}?name=Aryan${unique}`
-      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/cursor/room/${roomNo}?name=Aryan${unique}`
+      `${protocol}://${WS_URL}/cursor/room/${roomNo}?name=${name}${unique}`
+      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/cursor/room/${roomNo}?name=${name}${unique}`
     );
 
     socketProvider.set("user", {
       socket: userSocket,
-      userName: `Aryan${unique}`,
+      userName: `${name}${unique}`,
     });
     socketProvider.set("cursor", {
       socket: userCursorSocket,
-      userName: `Aryan${unique}`,
+      userName: `${name}${unique}`,
     });
 
-    console.log(`Aryan${unique}`);
+    console.log(`${name}${unique}`);
 
     userSocket.addEventListener("open", () => {
-      userSocket.send(JSON.stringify({ userName: `Aryan` + unique }));
+      userSocket.send(JSON.stringify({ userName: `${name}` + unique }));
     });
 
     userCursorSocket.addEventListener("open", () => {
@@ -109,7 +109,7 @@ function PlayArea() {
           y: e.clientY,
           height: window.innerHeight,
           width: window.innerWidth,
-          userName: `Aryan${unique}`,
+          userName: `${name}${unique}`,
           event: "cursor",
           cursorStyle: "purple",
         })
@@ -137,7 +137,7 @@ function PlayArea() {
       userCursorSocket.close();
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
-      localStorage.removeItem("pause");
+      localStorage.removeItem(`${name}${unique}`);
     };
   }, []);
   // console.log(userSockets);

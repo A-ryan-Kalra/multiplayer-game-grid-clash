@@ -2,20 +2,25 @@ import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useSocket } from "../services/use-socket-provider";
 import type { GridLayoutProps } from "../type";
 import UserPopover from "./user-popover";
+import { useSearchParams } from "react-router-dom";
 
 function Grids({ position, data, userName, timeLine }: GridLayoutProps) {
   const [value, setValue] = useState<string>("");
   const copyValue = useRef<string>("");
-
+  const [searchParams] = useSearchParams();
+  const unique = searchParams.get("accessId");
+  const name = searchParams.get("name");
   const gridRef = useRef<HTMLInputElement>(null);
   const { socketProvider } = useSocket();
 
   function isMinutePassed() {
     const now = Date.now();
-    const lastSaved = Number(localStorage.getItem("pause"));
-
-    if (!lastSaved) return true;
-    const millisecondsInAMinute = 1000 * 6;
+    const lastSaved = Number(localStorage.getItem(`${name}${unique}`));
+    const isUserSessionSaved = Object.keys(localStorage).includes(
+      `${name}${unique}`
+    );
+    if (!lastSaved && isUserSessionSaved) return true;
+    const millisecondsInAMinute = 1000 * 60;
 
     const duration = now - lastSaved;
 
@@ -23,11 +28,12 @@ function Grids({ position, data, userName, timeLine }: GridLayoutProps) {
   }
   const handleData = (e: ChangeEvent<HTMLInputElement>) => {
     console.log("update", isMinutePassed());
-    // if (!isMinutePassed()) {
-    //   alert("Please wait a minute before making another update.");
-    //   e.preventDefault();
-    //   return;
-    // }
+    if (!isMinutePassed()) {
+      gridRef.current?.blur();
+      alert("Please wait a minute before making another update.");
+      // e.preventDefault();
+      return;
+    }
     const value = e.target.value;
     if ([...value].length !== 1) {
       gridRef.current?.blur();
@@ -58,7 +64,7 @@ function Grids({ position, data, userName, timeLine }: GridLayoutProps) {
       })
     );
 
-    localStorage.setItem("pause", Date.now().toString());
+    localStorage.setItem(`${name}${unique}`, Date.now().toString());
   };
 
   useEffect(() => {
