@@ -42,11 +42,12 @@ function Grids({
     }
     showCountDownTimer();
     const value = e.target.value;
-    if ([...value].length !== 1) {
-      gridRef.current?.blur();
-      alert("Please enter only one character or emoji.");
-      return;
-    }
+
+    // if ([...value].length !== 1) {
+    //   gridRef.current?.blur();
+    //   alert("Please enter only one character or emoji.");
+    //   return;
+    // }
     copyValue.current = value;
     gridRef.current!.value = value;
 
