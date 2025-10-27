@@ -120,7 +120,7 @@ function Grids({
         // value={value}
         onChange={handleData}
         type="text"
-        className="h-full  w-full text-center border-none outline-none cursor-none"
+        className="h-full  w-full text-center max-sm:text-sm border-none outline-none cursor-none"
       />
     </div>
   );

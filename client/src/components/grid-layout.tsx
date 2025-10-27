@@ -55,7 +55,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const gridInfoSocket = new WebSocket(
       `${protocol}://${WS_URL}/grid-info/room/${roomNo}?name=${name}${unique}`
-      //   `wss://rn28c5qs-5173.inc1.devtunnels.ms/grid-info/room/${roomNo}?name=${name}${unique}`
+      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/grid-info/room/${roomNo}?name=${name}${unique}`
     );
     socketProvider.set("grid-info", {
       socket: gridInfoSocket,
@@ -65,7 +65,36 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
     gridInfoSocket?.addEventListener("message", (data) => {
       const parsedData = JSON.parse(data.data);
 
-      recordGridDetails.current = [...recordGridDetails.current, parsedData];
+      // Group multiple people in a sec
+      const isSamePosition =
+        parsedData.position ===
+        recordGridDetails.current[recordGridDetails.current.length - 1]
+          ?.position;
+      const isUpdatedInASecond =
+        (parsedData.timestamp as number) -
+          recordGridDetails.current[recordGridDetails.current.length - 1]
+            ?.timestamp <
+        1000;
+
+      if (isUpdatedInASecond && isSamePosition) {
+        const combine = {
+          ...parsedData,
+          data:
+            recordGridDetails.current[recordGridDetails.current.length - 1]
+              .data +
+            "," +
+            parsedData.data,
+          userName:
+            recordGridDetails.current[recordGridDetails.current.length - 1]
+              .userName +
+            "," +
+            parsedData.userName,
+        };
+        recordGridDetails.current.pop();
+        recordGridDetails.current = [...recordGridDetails.current, combine];
+      } else {
+        recordGridDetails.current = [...recordGridDetails.current, parsedData];
+      }
       if (parsedData.event === "grid") {
         setGridInfo((prev: GridLayoutProps[]) => {
           let updatedGrid: number = prev?.findIndex(
@@ -81,9 +110,14 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
           const prevUser = newGrid[updatedGrid].userName;
           const prevData = newGrid[updatedGrid].data;
 
+          const isSamePosition =
+            parsedData.position === newGrid[updatedGrid].position;
+
           const isSecondPassed =
+            isSamePosition &&
             parsedData?.timestamp - (newGrid[updatedGrid].timestamp as number) <
-              1000 && prevUser !== parsedData?.userName;
+              1000 &&
+            prevUser !== parsedData?.userName;
 
           if (prevUser && prevData && isSecondPassed) {
             newGrid[updatedGrid] = {
@@ -135,7 +169,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
         setLastChangesOnGrid(e);
         base[e.position] = e;
       }
-      // console.log("newArray", base);
+
       setSoftCopy(base);
     }, 80);
   }
@@ -149,14 +183,13 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
         setShowCountDown(false);
         clearInterval(timer);
       }
-      // console.log("60", countDown);
+
       showTimerRef.current!.textContent =
         countDown.toString().length >= 2 ? `0:${countDown}` : `0:0${countDown}`;
     }, 1000);
 
     return timer;
   };
-  // countDownTimer();
 
   return (
     <div className="flex-3 flex relative flex-col gap-y-3 py-2 h-full w-full items-center  p-1">
