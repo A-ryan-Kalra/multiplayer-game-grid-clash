@@ -95,6 +95,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       } else {
         recordGridDetails.current = [...recordGridDetails.current, parsedData];
       }
+
       if (parsedData.event === "grid") {
         setGridInfo((prev: GridLayoutProps[]) => {
           let updatedGrid: number = prev?.findIndex(
@@ -220,7 +221,9 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
         </div>
         {lastChangesOnGrid && (
           <p className="text-xs font-semibold">
-            Review last changes made by: {lastChangesOnGrid.userName} at{" "}
+            Review last changes made by: ( {lastChangesOnGrid.userName}
+            {"- "}
+            {lastChangesOnGrid.data} ) at{" "}
             {moment(lastChangesOnGrid.timestamp).format("hh:mm:ss A")}
           </p>
         )}

@@ -37,24 +37,25 @@ function Grids({
     if (!isMinutePassed()) {
       gridRef.current?.blur();
       alert("Please wait a minute before making another update.");
-      // e.preventDefault();
       return;
     }
     showCountDownTimer();
-    const value = e.target.value;
+    e.preventDefault();
+
+    const newValue = e.target.value.split(" ").pop();
 
     // if ([...value].length !== 1) {
     //   gridRef.current?.blur();
     //   alert("Please enter only one character or emoji.");
     //   return;
     // }
-    copyValue.current = value;
-    gridRef.current!.value = value;
+    copyValue.current = newValue + " ";
+    gridRef.current!.value = newValue + " ";
 
     //   e.target.value.length > 1 ? e.target.value.slice(1) : e.target.value;
 
     // e.target.value = "";
-    setValue(value);
+    setValue(newValue + " ");
 
     gridRef.current?.blur();
     const gridSocketProvider = socketProvider.get("grid-info");
@@ -64,7 +65,7 @@ function Grids({
 
     gridData?.send(
       JSON.stringify({
-        data: value,
+        data: newValue,
         userName,
         event: "grid",
         position: position,
@@ -77,7 +78,7 @@ function Grids({
 
   useEffect(() => {
     // if (data) {
-    setValue(data);
+    setValue(data + " ");
     // }
   }, [data]);
 
