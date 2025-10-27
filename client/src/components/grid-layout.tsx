@@ -1,6 +1,12 @@
 import { useSocket } from "@/services/use-socket-provider";
 import type { GridLayoutProps, UserProps } from "@/type";
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from "react";
 import Grids from "./grid";
 import MobileSidbar from "./mobile-sidebar";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -12,7 +18,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   const [searchParams] = useSearchParams();
   const unique = searchParams.get("accessId");
   const name = searchParams.get("name");
-
+  const showTimerRef = useRef<HTMLDivElement>(null);
   const { socketProvider } = useSocket();
   const firstTimeStamp = useRef<number>(0);
   const lastTimeStamp = useRef<number>(0);
@@ -20,6 +26,10 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   const recordGridDetails = useRef<GridLayoutProps[]>([]);
   const [lastChangesOnGrid, setLastChangesOnGrid] = useState<string>("");
   const timerRef = useRef<number | null>(null);
+  const [showCountDown, setShowCountDown] = useState<boolean>(false);
+
+  const [timeLine, setTimeLine] = useState<boolean>(false);
+  const countDownRef = useRef<number>(59);
 
   const [gridInfo, setGridInfo] = useState(
     Array.from({ length: 100 }, (_, index) => ({
@@ -43,9 +53,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
     ? firstTimeStamp.current
     : gridInfo[0].timestamp;
   const endTime = lastTimeStamp.current ? lastTimeStamp.current : Date.now();
-
   const [value, setValue] = useState<number>(endTime);
-  const [timeLine, setTimeLine] = useState<boolean>(false);
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -96,10 +104,19 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
         });
       }
     });
+
     return () => {
       gridInfoSocket.close();
     };
   }, []);
+
+  useEffect(() => {
+    if (showCountDown) {
+      showTimerRef.current!.textContent = `0:59`;
+      countDownRef.current = countDownTimer();
+    }
+    return () => clearInterval(countDownRef.current);
+  }, [showCountDown]);
 
   const newArray = () =>
     Array.from({ length: 100 }, (_, index) => ({
@@ -127,17 +144,46 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       setSoftCopy(base);
     }, 80);
   }
-  //   console.log("lastChanges", lastChangesOnGrid);
+
+  let countDown = 59;
+  const countDownTimer = () => {
+    const timer = setInterval(() => {
+      if (countDown > 0) {
+        countDown -= 1;
+      } else {
+        setShowCountDown(false);
+        clearInterval(timer);
+      }
+      // console.log("60", countDown);
+      showTimerRef.current!.textContent =
+        countDown.toString().length >= 2 ? `0:${countDown}` : `0:0${countDown}`;
+    }, 1000);
+
+    return timer;
+  };
+  // countDownTimer();
+
   return (
     <div className="flex-3 flex relative flex-col gap-y-3 py-2 h-full w-full items-center  p-1">
       <h1 className="md:text-2xl text-lg font-semibold">
         🧩 GRID CLASH ⚔️ | 10x10 Multiplayer Arena
       </h1>
       <h1 className="text-lg ">Add emojis to the box</h1>
-      <div className="min-h-[660px]  max-w-[720px] flex flex-col  gap-y-2">
-        <div className="w-full rounded-sm bg-slate-100 border-2 gap-1 h-full p-2 grid-cols-10 grid mx-auto ">
+      <div className="min-h-[660px]  relative max-w-[720px] flex flex-col  gap-y-2">
+        <div className="w-full mt-5 rounded-sm bg-slate-100 border-2 gap-1 h-full p-2 grid-cols-10 grid mx-auto ">
+          {showCountDown && (
+            <div className=" absolute top-0 right-2 text-xs gap-1 flex items-center">
+              <p>Please wait untill </p>{" "}
+              <span
+                className="inline-block w-6 text-center"
+                ref={showTimerRef}
+              />{" "}
+              before making your next update.
+            </div>
+          )}
           {(timeLine ? softCopy : gridInfo)?.map((item, index) => (
             <Grids
+              showCountDownTimer={() => setShowCountDown(true)}
               timeLine={isTimeLineOn}
               timestamp={item.timestamp}
               event="grid"

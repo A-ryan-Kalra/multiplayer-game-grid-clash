@@ -4,7 +4,13 @@ import type { GridLayoutProps } from "../type";
 import UserPopover from "./user-popover";
 import { useSearchParams } from "react-router-dom";
 
-function Grids({ position, data, userName, timeLine }: GridLayoutProps) {
+function Grids({
+  position,
+  data,
+  userName,
+  timeLine,
+  showCountDownTimer,
+}: GridLayoutProps & { showCountDownTimer: () => void }) {
   const [value, setValue] = useState<string>("");
   const copyValue = useRef<string>("");
   const [searchParams] = useSearchParams();
@@ -26,14 +32,15 @@ function Grids({ position, data, userName, timeLine }: GridLayoutProps) {
 
     return duration >= millisecondsInAMinute;
   }
+
   const handleData = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log("update", isMinutePassed());
     if (!isMinutePassed()) {
       gridRef.current?.blur();
       alert("Please wait a minute before making another update.");
       // e.preventDefault();
       return;
     }
+    showCountDownTimer();
     const value = e.target.value;
     if ([...value].length !== 1) {
       gridRef.current?.blur();

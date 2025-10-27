@@ -20,9 +20,6 @@ function PlayArea() {
   // const unique = Date.now().toString().slice(-3);
   const cursorRef = useRef<HTMLDivElement>(null);
 
-  // console.log(socketProvider);
-  // console.log(gridInfo);
-
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const userSocket = new WebSocket(
@@ -43,8 +40,6 @@ function PlayArea() {
       userName: `${name}${unique}`,
     });
 
-    console.log(`${name}${unique}`);
-
     userSocket.addEventListener("open", () => {
       userSocket.send(JSON.stringify({ userName: `${name}` + unique }));
     });
@@ -55,7 +50,7 @@ function PlayArea() {
 
     userSocket.addEventListener("message", (data) => {
       const parsedData = JSON.parse(data.data);
-      console.log("Message User");
+
       if (parsedData?.exit && parsedData?.event !== "cursor") {
         setUserSockets((prev: UserProps[] | undefined) => {
           const updatedMember = prev?.filter(
@@ -123,7 +118,6 @@ function PlayArea() {
 
     function handleResize() {
       if (window.matchMedia("(pointer: coarse)").matches) {
-        console.log("wowowo");
         cursorRef.current!.style.display = "none";
       } else {
         cursorRef.current!.style.display = "block";
@@ -140,15 +134,16 @@ function PlayArea() {
       localStorage.removeItem(`${name}${unique}`);
     };
   }, []);
-  // console.log(userSockets);
 
   return (
     <div className="w-full h-full flex overflow-x-hidden bg-amber-100/70 backdrop-blur-sm cursor-none">
       <Sidebar userSockets={userSockets || []} />
       <CursorMovement ref={cursorRef} />
+
       {userSockets?.map((user: UserProps, index: number) => (
         <UsersCursorMovement {...user} key={index} />
       ))}
+
       <GridLayout userSockets={userSockets || []} />
     </div>
   );

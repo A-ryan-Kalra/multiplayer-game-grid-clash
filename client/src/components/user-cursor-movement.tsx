@@ -24,23 +24,25 @@ function UsersCursorMovement({
         }px)`,
       }}
     >
-      <div
-        style={{
-          width: "25px",
-          height: "25px",
-          color: cursorStyle,
-        }}
-        className=" relative top-0 left-0 mx-auto"
-      >
-        {userName}
-        {/* <div
+      {userName && (
+        <div
+          style={{
+            width: "25px",
+            height: "25px",
+            color: cursorStyle,
+          }}
+          className=" relative top-0 left-0 mx-auto"
+        >
+          {userName}
+          {/* <div
           className={`absolute -top-11 min-w-[150px] bg-lime-300/90 ${
             messages.message && "p-1"
           } text-black rounded-[5px] text-sm`}
         >
           {messages.name !== name && messages.message && "Typing..."}
         </div> */}
-      </div>
+        </div>
+      )}
       <div
         style={{
           WebkitMaskImage: "url('/cursor.svg')",
