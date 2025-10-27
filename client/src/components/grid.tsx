@@ -101,7 +101,7 @@ function Grids({
   return (
     <div
       key={position}
-      className={`relative rounded-sm border-gray-500 w-full h-full hover:opacity-60 text-2xl text-center  border-2 p-1 ${
+      className={`relative rounded-sm border-gray-500 w-full h-full hover:opacity-60 text-2xl text-center  border-2 sm:p-1 ${
         userName ? "bg-amber-300" : "bg-amber-200"
       }`}
     >
@@ -120,7 +120,7 @@ function Grids({
         // value={value}
         onChange={handleData}
         type="text"
-        className="h-full w-full text-center border-none outline-none cursor-none"
+        className="h-full  w-full text-center border-none outline-none cursor-none"
       />
     </div>
   );
