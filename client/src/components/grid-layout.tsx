@@ -1,12 +1,6 @@
 import { useSocket } from "@/services/use-socket-provider";
 import type { GridLayoutProps, UserProps } from "@/type";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-} from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import Grids from "./grid";
 import MobileSidbar from "./mobile-sidebar";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -167,7 +161,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   return (
     <div className="flex-3 flex relative flex-col gap-y-3 py-2 h-full w-full items-center  p-1">
       <h1 className="md:text-2xl text-lg font-semibold">
-        🧩 GRID CLASH ⚔️ | 10x10 Multiplayer Arena
+        GRID CLASH ⚔️ | 10x10 Multiplayer Arena
       </h1>
       <h1 className="text-lg ">Add emojis to the box</h1>
       <div className="min-h-[660px]  relative max-w-[720px] flex flex-col  gap-y-2">

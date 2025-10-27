@@ -8,6 +8,8 @@ import {
   Member,
   SocketType,
 } from "./socket-events";
+import { fileURLToPath } from "url";
+import path from "path";
 const app = express();
 
 cors({ origin: "*" });
@@ -19,6 +21,7 @@ const wss = new WebSocketServer({ server });
 app.get("/health", (req, res, next) => {
   res.json({ message: "Working" });
 });
+
 // app.use(express.static("public"));
 const rooms: SocketType = new Map<string, Member[]>();
 const cursors: SocketType = new Map<string, Member[]>();
@@ -76,6 +79,12 @@ wss.on("connection", (ws: WebSocket, req) => {
   });
 });
 
+const dirname = path.resolve();
+const outputDist = path.join(dirname, "../client/dist");
+app.use(express.static(outputDist));
+app.get("*splat", (req, res) => {
+  res.sendFile(path.join(outputDist, "index.html"));
+});
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
   console.log("Server is running on PORT: ", PORT);
