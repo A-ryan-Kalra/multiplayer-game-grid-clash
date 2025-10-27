@@ -110,13 +110,9 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
           const prevUser = newGrid[updatedGrid].userName;
           const prevData = newGrid[updatedGrid].data;
 
-          const isSamePosition =
-            parsedData.position === newGrid[updatedGrid].position;
-
           const isSecondPassed =
             isSamePosition &&
-            parsedData?.timestamp - (newGrid[updatedGrid].timestamp as number) <
-              1000 &&
+            isUpdatedInASecond &&
             prevUser !== parsedData?.userName;
 
           if (prevUser && prevData && isSecondPassed) {

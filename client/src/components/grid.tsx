@@ -97,8 +97,6 @@ function Grids({
     (e.target as HTMLInputElement).value = "";
   }
 
-  // console.log("--------------");
-  // console.log("data", value);
   return (
     <div
       key={position}
