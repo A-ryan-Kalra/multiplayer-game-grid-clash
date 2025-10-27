@@ -131,3 +131,23 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes glow-flow {
+  0% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+}
+
+.flow-bg {
+  background-size: 200% 200%;
+  animation: glow-flow 2s ease-in-out infinite;
+}

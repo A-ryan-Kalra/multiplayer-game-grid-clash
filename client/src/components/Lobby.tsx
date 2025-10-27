@@ -17,8 +17,8 @@ function Lobby() {
 
   return (
     <div className="flex  w-full h-full justify-center items-center">
-      <div className="h-fit w-fit bg-gradient-to-tl rounded-md p-1 overflow-hidden from-emerald-400 via-pink-600 to-purple-400">
-        <div className="flex gap-y-4 flex-col bg-white rounded-sm overflow-hidden items-center p-2 m-1  w-fit h-fit border-[1px] border-zinc-200 ">
+      <div className="h-fit w-fit bg-gradient-to-tl flow-bg rounded-md p-2 overflow-hidden from-emerald-400 via-pink-600 to-purple-400">
+        <div className="flex gap-y-4 flex-col bg-white z-10 brightness-100 rounded-sm overflow-hidden items-center p-2 m-1  w-fit h-fit border-[1px] border-zinc-200 ">
           <h1 className="text-4xl max-sm:text-3xl font-semibold text-teal-500 ">
             Welcome to the Lobby
           </h1>
