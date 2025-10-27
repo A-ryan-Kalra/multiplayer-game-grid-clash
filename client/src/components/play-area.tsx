@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSocket } from "../services/use-socket-provider";
 import { type UserProps } from "../type";
 import UsersCursorMovement from "./user-cursor-movement";
@@ -96,6 +96,8 @@ function PlayArea() {
       }
     });
 
+    const userCursorColor = generateRandomHexColor();
+
     function handleMouseMove(e: MouseEvent) {
       // console.log({ x: e.clientX, y: e.clientY });
       userCursorSocket.send(
@@ -106,7 +108,7 @@ function PlayArea() {
           width: window.innerWidth,
           userName: `${name}${unique}`,
           event: "cursor",
-          cursorStyle: "purple",
+          cursorStyle: userCursorColor,
         })
       );
       cursorRef.current!.style.transform = `translate(${e.clientX - 6}px, ${
@@ -133,6 +135,14 @@ function PlayArea() {
       window.removeEventListener("mousemove", handleMouseMove);
       localStorage.removeItem(`${name}${unique}`);
     };
+  }, []);
+  const generateRandomHexColor = useCallback(() => {
+    return (
+      "#" +
+      Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, "0")
+    );
   }, []);
 
   return (
