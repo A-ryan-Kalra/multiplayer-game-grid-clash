@@ -197,7 +197,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
         GRID CLASH ⚔️ | 10x10 Multiplayer Arena
       </h1>
       <h1 className="text-lg ">Add emojis to the box</h1>
-      <div className="sm:min-h-[660px]  relative max-w-[720px] flex flex-col  gap-y-2">
+      <div className="sm:h-[660px]  relative max-w-[720px] flex flex-col  gap-y-2">
         <div className="w-full mt-5 rounded-sm bg-slate-100 border-2 gap-1 h-full p-2 grid-cols-10 grid mx-auto ">
           {showCountDown && (
             <div className=" absolute top-0 right-2 text-xs gap-1 flex items-center">
@@ -238,9 +238,11 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
               lastTimeStamp.current = Date.now();
               if (timeLine) setLastChangesOnGrid(null);
             }}
-            className="p-1.5 text-nowrap disabled:opacity-50 hover:opacity-70 cursor-none rounded-md bg-blue-300 text-sm"
+            className={`p-1.5 text-nowrap disabled:opacity-50 hover:opacity-70 cursor-none rounded-md ${
+              !isTimeLineOn ? "bg-blue-500" : "bg-green-500"
+            }  text-white font-semibold text-sm`}
           >
-            {!isTimeLineOn ? "Open Timeline" : "Live"}
+            {!isTimeLineOn ? "View Timeline" : "View Live"}
           </button>
           <input
             type="range"
