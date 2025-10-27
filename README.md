@@ -9,12 +9,22 @@
 </div>
 
 
+
 <div align='center'>
   
-<!-- <img width="1435" height="870" alt="canvas-mirror" src="" /> -->
-<!-- <video src="" muted /> -->
+<img width="1435" height="870" alt="canvas-mirror" src="https://github.com/user-attachments/assets/e656a285-8d66-4c60-81d7-bcf820f1b6c4" />
+
+---
+
+ <video src="https://github.com/user-attachments/assets/692dc77c-a43d-4785-b908-bb1978d3dcee"  /> 
 
 </div>
+
+<br/>
+
+## 🔌 Connect And Play With Users:
+- Username must be unique!
+- Use the same room name, make sure everyone joins the exact same room to collaborate.
 
 <br/>
 
@@ -42,6 +52,37 @@
 ---
 
 <br/>
+
+## ⚙️ Installation
+  - ### 📋 Manual Installation:
+
+    #### 1. Clone the Repository
+    
+    ```
+    git clone https://github.com/A-ryan-Kalra/multiplayer-game-grid-clash
+    
+    # Enter the working directory
+    cd multiplayer-game-grid-clash
+    ```
+    
+    #### 2. Backend Setup ( NodeJs(ExpressJs) )
+    
+    ```
+    cd server
+    npm install
+    npm run dev
+    ```
+    
+    #### 3. Frontend Setup (ReactJs)
+    
+    ```
+    cd ../client
+    npm install
+    npm run dev
+    ```
+    
+    Open <a href='http://localhost:5173'>http://localhost:5173</a> in your browser to see the result.
+<br>
 
 <details>
   <summary>You know what's absolutely free?</summary>
