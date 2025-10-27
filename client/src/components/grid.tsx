@@ -21,8 +21,8 @@ function Grids({
 
   function isMinutePassed() {
     const now = Date.now();
-    const lastSaved = Number(localStorage.getItem(`${name}${unique}`));
-    const isUserSessionSaved = Object.keys(localStorage).includes(
+    const lastSaved = Number(sessionStorage.getItem(`${name}${unique}`));
+    const isUserSessionSaved = Object.keys(sessionStorage).includes(
       `${name}${unique}`
     );
     if (!lastSaved && isUserSessionSaved) return true;
@@ -73,7 +73,7 @@ function Grids({
       })
     );
 
-    localStorage.setItem(`${name}${unique}`, Date.now().toString());
+    sessionStorage.setItem(`${name}${unique}`, Date.now().toString());
   };
 
   useEffect(() => {

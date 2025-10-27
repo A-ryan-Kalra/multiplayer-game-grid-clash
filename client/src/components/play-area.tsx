@@ -127,13 +127,14 @@ function PlayArea() {
     }
     // handleResize();
     window.addEventListener("resize", handleResize);
+    window.addEventListener("beforeunload", handleResize);
 
     return () => {
       userSocket.close();
       userCursorSocket.close();
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
-      localStorage.removeItem(`${name}${unique}`);
+      sessionStorage.removeItem(`${name}${unique}`);
     };
   }, []);
   const generateRandomHexColor = useCallback(() => {
