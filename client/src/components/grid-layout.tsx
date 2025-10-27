@@ -10,6 +10,7 @@ import {
 import Grids from "./grid";
 import MobileSidbar from "./mobile-sidebar";
 import { useParams, useSearchParams } from "react-router-dom";
+import moment from "moment";
 
 const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000";
 
@@ -24,7 +25,8 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   const lastTimeStamp = useRef<number>(0);
   const [isTimeLineOn, setIsTimeLineOn] = useState<boolean>(false);
   const recordGridDetails = useRef<GridLayoutProps[]>([]);
-  const [lastChangesOnGrid, setLastChangesOnGrid] = useState<string>("");
+  const [lastChangesOnGrid, setLastChangesOnGrid] =
+    useState<GridLayoutProps | null>(null);
   const timerRef = useRef<number | null>(null);
   const [showCountDown, setShowCountDown] = useState<boolean>(false);
 
@@ -69,7 +71,6 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
     gridInfoSocket?.addEventListener("message", (data) => {
       const parsedData = JSON.parse(data.data);
 
-      console.log(parsedData);
       recordGridDetails.current = [...recordGridDetails.current, parsedData];
       if (parsedData.event === "grid") {
         setGridInfo((prev: GridLayoutProps[]) => {
@@ -137,7 +138,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       let base = newArray();
       for (const e of recordGridDetails.current) {
         if (e.timestamp > targetTime) break;
-        setLastChangesOnGrid(e.userName);
+        setLastChangesOnGrid(e);
         base[e.position] = e;
       }
       // console.log("newArray", base);
@@ -194,8 +195,11 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
             />
           ))}
         </div>
-        {lastChangesOnGrid.trim() && (
-          <p>Review last changes made by: {lastChangesOnGrid}</p>
+        {lastChangesOnGrid && (
+          <p className="text-xs font-semibold">
+            Review last changes made by: {lastChangesOnGrid.userName} at{" "}
+            {moment(lastChangesOnGrid.timestamp).format("hh:mm:ss A")}
+          </p>
         )}
         <div className="flex items-center gap-x-2 border-slate-400 border-[1px] p-1  rounded-md w-full justify-center">
           <button
@@ -205,7 +209,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
               setTimeLine(false);
               setIsTimeLineOn((prev) => !prev);
               lastTimeStamp.current = Date.now();
-              if (timeLine) setLastChangesOnGrid("");
+              if (timeLine) setLastChangesOnGrid(null);
             }}
             className="p-1.5 text-nowrap disabled:opacity-50 hover:opacity-70 cursor-none rounded-md bg-blue-300 text-sm"
           >
