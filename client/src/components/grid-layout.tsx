@@ -159,7 +159,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
         const requestSocket = socketProvider?.get("request-data")?.socket;
         if (
           userInput?.toLowerCase() === "y" ||
-          userInput?.toLowerCase() == "yes"
+          userInput?.toLowerCase() === "yes"
         ) {
           requestSocket?.send(
             JSON.stringify({
@@ -172,15 +172,19 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
           );
           return;
         }
-
-        requestSocket!.send(
-          JSON.stringify({
-            userName: `${name}` + unique,
-            reciever: parsedData?.userName,
-            note: "unaccepted",
-            route: "reciever",
-          })
-        );
+        if (
+          userInput?.toLowerCase() !== "y" ||
+          userInput?.toLowerCase() !== "yes"
+        ) {
+          requestSocket!.send(
+            JSON.stringify({
+              userName: `${name}` + unique,
+              reciever: parsedData?.userName,
+              note: "unaccepted",
+              route: "reciever",
+            })
+          );
+        }
       } else if (parsedData?.route === "reciever") {
         if (parsedData?.note === "unaccepted") {
           alert(parsedData?.userName + " rejected your request");
