@@ -23,7 +23,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
     useState<GridLayoutProps | null>(null);
   const timerRef = useRef<number | null>(null);
   const [showCountDown, setShowCountDown] = useState<boolean>(false);
-
+  const [requestData, setRequestData] = useState<any>(null);
   const [timeLine, setTimeLine] = useState<boolean>(false);
   const countDownRef = useRef<number>(59);
 
@@ -152,40 +152,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       const parsedData: any = JSON.parse(data.data);
 
       if (parsedData.route === "sender") {
-        const userInput = window.prompt(
-          `${parsedData?.userName} requests you to send the current game session. Please confirm (y/n):`
-        );
-
-        const requestSocket = socketProvider?.get("request-data")?.socket;
-        if (
-          userInput!.trim()?.toLowerCase() === "y" ||
-          userInput!.trim()?.toLowerCase() === "yes"
-        ) {
-          requestSocket?.send(
-            JSON.stringify({
-              userName: `${name}` + unique,
-              reciever: parsedData?.userName,
-              data: sharedState?.current,
-              note: "accepted",
-              route: "reciever",
-            })
-          );
-          return;
-        }
-        if (
-          userInput!.trim()?.toLowerCase() !== "y" ||
-          userInput!.trim()?.toLowerCase() !== "yes"
-        ) {
-          requestSocket!.send(
-            JSON.stringify({
-              userName: `${name}` + unique,
-              reciever: parsedData?.userName,
-              note: "unaccepted",
-              route: "reciever",
-            })
-          );
-          return;
-        }
+        setRequestData(parsedData);
       } else if (parsedData?.route === "reciever") {
         if (parsedData?.note === "unaccepted") {
           alert(parsedData?.userName + " rejected your request");
@@ -200,7 +167,19 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       requestGameSocket.close();
     };
   }, []);
-
+  const handleResponse = (accepted: boolean) => {
+    const requestSocket = socketProvider?.get("request-data")?.socket;
+    requestSocket?.send(
+      JSON.stringify({
+        userName: `${name}${unique}`,
+        reciever: requestData?.userName,
+        data: accepted ? sharedState?.current : undefined,
+        note: accepted ? "accepted" : "unaccepted",
+        route: "reciever",
+      })
+    );
+    setRequestData(null);
+  };
   useEffect(() => {
     if (showCountDown) {
       showTimerRef.current!.textContent = `0:59`;
@@ -258,6 +237,30 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       <h1 className="md:text-2xl text-lg font-semibold">
         GRID CLASH ⚔️ | 10x10 Multiplayer Arena
       </h1>
+      {requestData && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 bg-opacity-40">
+          <div className="bg-white p-4 rounded-lg shadow-xl">
+            <p>
+              {requestData.userName} requests you to send the current game
+              session.
+            </p>
+            <div className="mt-3 flex gap-2">
+              <button
+                className="hover:opacity-70 p-1 text-white rounded md: bg-green-500"
+                onClick={() => handleResponse(true)}
+              >
+                Yes
+              </button>
+              <button
+                className="hover:opacity-70 p-1 text-white rounded md: bg-red-500"
+                onClick={() => handleResponse(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <h1 className="text-lg ">Add emojis to the box</h1>
       <div className="sm:h-[660px]  relative max-w-[720px] flex flex-col  gap-y-2">
         <div className="w-full mt-5 rounded-sm bg-slate-100 border-2 gap-1 h-full p-2 grid-cols-10 grid mx-auto ">
