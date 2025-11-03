@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useRef, type ReactNode } from "react";
 
 const SocketContext = createContext<
   Map<string, { socket: WebSocket; userName: string }>
