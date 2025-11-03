@@ -152,14 +152,14 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       const parsedData: any = JSON.parse(data.data);
 
       if (parsedData.route === "sender") {
-        const userInput = prompt(
+        const userInput = window.prompt(
           `${parsedData?.userName} requests you to send the current game session. Please confirm (y/n):`
         );
 
         const requestSocket = socketProvider?.get("request-data")?.socket;
         if (
-          userInput?.toLowerCase() === "y" ||
-          userInput?.toLowerCase() === "yes"
+          userInput!.trim()?.toLowerCase() === "y" ||
+          userInput!.trim()?.toLowerCase() === "yes"
         ) {
           requestSocket?.send(
             JSON.stringify({
@@ -173,8 +173,8 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
           return;
         }
         if (
-          userInput?.toLowerCase() !== "y" ||
-          userInput?.toLowerCase() !== "yes"
+          userInput!.trim()?.toLowerCase() !== "y" ||
+          userInput!.trim()?.toLowerCase() !== "yes"
         ) {
           requestSocket!.send(
             JSON.stringify({
@@ -184,6 +184,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
               route: "reciever",
             })
           );
+          return;
         }
       } else if (parsedData?.route === "reciever") {
         if (parsedData?.note === "unaccepted") {
