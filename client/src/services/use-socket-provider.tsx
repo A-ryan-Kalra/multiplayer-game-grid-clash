@@ -1,4 +1,10 @@
-import { createContext, useContext, useRef, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 const SocketContext = createContext<
   Map<string, { socket: WebSocket; userName: string }>
@@ -13,6 +19,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const socketRefs = useRef<
     Map<string, { socket: WebSocket; userName: string }>
   >(new Map());
+
   return (
     <SocketContext.Provider value={socketRefs.current}>
       {children}

@@ -36,6 +36,15 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       timestamp: Date.now(),
     }))
   );
+  const sharedState = useRef(
+    Array.from({ length: 100 }, (_, index) => ({
+      data: "",
+      userName: ``,
+      event: "grid",
+      position: index,
+      timestamp: Date.now(),
+    }))
+  );
   const [softCopy, setSoftCopy] = useState(
     Array.from({ length: 100 }, (_, index) => ({
       data: "",
@@ -52,10 +61,18 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
   const [value, setValue] = useState<number>(endTime);
 
   useEffect(() => {
+    sharedState.current = gridInfo;
+  }, [gridInfo]);
+
+  useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const gridInfoSocket = new WebSocket(
       `${protocol}://${WS_URL}/grid-info/room/${roomNo}?name=${name}${unique}`
       // `wss://rn28c5qs-5173.inc1.devtunnels.ms/grid-info/room/${roomNo}?name=${name}${unique}`
+    );
+    const requestGameSocket = new WebSocket(
+      `${protocol}://${WS_URL}/request-data/room/${roomNo}?name=${name}${unique}`
+      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/cursor/room/${roomNo}?name=${name}${unique}`
     );
     socketProvider.set("grid-info", {
       socket: gridInfoSocket,
@@ -131,8 +148,55 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       }
     });
 
+    requestGameSocket.addEventListener("message", (data) => {
+      const parsedData: any = JSON.parse(data.data);
+      console.log("yoyoyo", parsedData);
+      console.log("sharedState.current", sharedState.current);
+
+      if (parsedData.route === "sender") {
+        const userInput = prompt(
+          `${parsedData?.userName} requests you to send the current game session. Please confirm (y/n):`
+        );
+
+        const requestSocket = socketProvider?.get("request-data")?.socket;
+        if (
+          userInput?.toLowerCase() === "y" ||
+          userInput?.toLowerCase() == "yes"
+        ) {
+          console.log("userInput", userInput);
+          requestSocket?.send(
+            JSON.stringify({
+              userName: `${name}` + unique,
+              reciever: parsedData?.userName,
+              data: sharedState?.current,
+              note: "accepted",
+              route: "reciever",
+            })
+          );
+          return;
+        }
+
+        requestSocket!.send(
+          JSON.stringify({
+            userName: `${name}` + unique,
+            reciever: parsedData?.userName,
+            note: "unaccepted",
+            route: "reciever",
+          })
+        );
+      } else if (parsedData?.route === "reciever") {
+        console.log("answer back", parsedData);
+        if (parsedData?.note === "unaccepted") {
+          alert(parsedData?.userName + " rejected your request");
+          return;
+        }
+        setGridInfo(parsedData?.data);
+      }
+    });
+
     return () => {
       gridInfoSocket.close();
+      requestGameSocket.close();
     };
   }, []);
 

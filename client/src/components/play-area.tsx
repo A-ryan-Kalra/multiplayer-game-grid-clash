@@ -30,7 +30,15 @@ function PlayArea() {
       `${protocol}://${WS_URL}/cursor/room/${roomNo}?name=${name}${unique}`
       // `wss://rn28c5qs-5173.inc1.devtunnels.ms/cursor/room/${roomNo}?name=${name}${unique}`
     );
+    const requestGameSocket = new WebSocket(
+      `${protocol}://${WS_URL}/request-data/room/${roomNo}?name=${name}${unique}`
+      // `wss://rn28c5qs-5173.inc1.devtunnels.ms/cursor/room/${roomNo}?name=${name}${unique}`
+    );
 
+    socketProvider.set("request-data", {
+      socket: requestGameSocket,
+      userName: `${name}${unique}`,
+    });
     socketProvider.set("user", {
       socket: userSocket,
       userName: `${name}${unique}`,
@@ -128,13 +136,17 @@ function PlayArea() {
     // handleResize();
     window.addEventListener("resize", handleResize);
     window.addEventListener("beforeunload", handleResize);
-
+    const isConnected = JSON.stringify(localStorage.getItem("isConnected"));
+    console.log("isConnected", isConnected);
+    localStorage.setItem("isConnected", JSON.stringify(true));
     return () => {
       userSocket.close();
+      requestGameSocket.close();
       userCursorSocket.close();
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       sessionStorage.removeItem(`${name}${unique}`);
+      localStorage.setItem("isConnected", JSON.stringify(false));
     };
   }, []);
   const generateRandomHexColor = useCallback(() => {
