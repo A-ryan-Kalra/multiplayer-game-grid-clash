@@ -63,7 +63,6 @@ wss.on("connection", (ws: WebSocket, req) => {
     } else if (url.pathname.startsWith("/cursor")) {
       brodCastMessage(cursorMembers || [], ws, data.toString(), userName, url);
     } else if (url.pathname.startsWith("/request-data")) {
-      console.log("request-data", JSON.parse(data.toString()));
       const payload = JSON.parse(data.toString());
       const requestTo = payload?.requestTo;
 
@@ -74,7 +73,6 @@ wss.on("connection", (ws: WebSocket, req) => {
           payload?.route === "reciever" &&
           client.userName === payload.reciever
         ) {
-          console.log("sendBack", data.toString());
           client.socket.send(data.toString());
         }
       });

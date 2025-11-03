@@ -150,8 +150,6 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
 
     requestGameSocket.addEventListener("message", (data) => {
       const parsedData: any = JSON.parse(data.data);
-      console.log("yoyoyo", parsedData);
-      console.log("sharedState.current", sharedState.current);
 
       if (parsedData.route === "sender") {
         const userInput = prompt(
@@ -163,7 +161,6 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
           userInput?.toLowerCase() === "y" ||
           userInput?.toLowerCase() == "yes"
         ) {
-          console.log("userInput", userInput);
           requestSocket?.send(
             JSON.stringify({
               userName: `${name}` + unique,
@@ -185,7 +182,6 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
           })
         );
       } else if (parsedData?.route === "reciever") {
-        console.log("answer back", parsedData);
         if (parsedData?.note === "unaccepted") {
           alert(parsedData?.userName + " rejected your request");
           return;
