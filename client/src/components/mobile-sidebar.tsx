@@ -1,9 +1,24 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useSocket } from "@/services/use-socket-provider";
 import type { UserProps } from "@/type";
 import { LogOutIcon, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 function MobileSidbar({ userSockets }: { userSockets: UserProps[] | [] }) {
   const navigate = useNavigate();
+  const { socketProvider } = useSocket();
+  const handleRequest = async (requestTo: string) => {
+    const requestSocket = socketProvider.get("request-data")?.socket;
+    const userName = socketProvider.get("request-data")?.userName;
+
+    requestSocket!.send(
+      JSON.stringify({
+        userName,
+        requestTo,
+        route: "sender",
+      })
+    );
+  };
+
   return (
     <Sheet>
       <SheetTrigger className="bg-slate-300 p-1 lg:hidden rounded-full">
@@ -31,7 +46,10 @@ function MobileSidbar({ userSockets }: { userSockets: UserProps[] | [] }) {
             {userSockets?.map((player) => (
               <div className="flex items-center gap-x-1">
                 <span className="bg-[#3fba6e] w-1 p-1 h-1 rounded-full"></span>
-                <p className="font-mono text-sm  font-semibold">
+                <p
+                  onClick={() => handleRequest(player.userName)}
+                  className="font-mono text-sm  font-semibold"
+                >
                   {player.userName}
                 </p>
               </div>

@@ -1,30 +1,25 @@
 import { useSocket } from "@/services/use-socket-provider";
 import type { UserProps } from "@/type";
 import { LogOutIcon } from "lucide-react";
-import { useEffect } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Sidebar({ userSockets }: { userSockets: UserProps[] | [] }) {
   const navigate = useNavigate();
-  const roomNo = useParams()?.roomId ?? 1;
-  const [searchParams] = useSearchParams();
-  const unique = searchParams.get("accessId");
-  const name = searchParams.get("name");
+
   const { socketProvider } = useSocket();
 
   const handleRequest = async (requestTo: string) => {
     const requestSocket = socketProvider.get("request-data")?.socket;
+    const userName = socketProvider.get("request-data")?.userName;
 
     requestSocket!.send(
       JSON.stringify({
-        userName: `${name}` + unique,
+        userName,
         requestTo,
         route: "sender",
       })
     );
   };
-
-  useEffect(() => {}, []);
 
   return (
     <div className="relative w-full max-lg:hidden flex gap-y-2 flex-col h-full bg-amber-200 border-r border-r-slate-900 flex-1">
