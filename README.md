@@ -60,7 +60,6 @@
 - **Frontend:** React / ShadCN / TailwindCSS
 - **Backend:** Node.js / Express 
 - **Real Time:** Websockets 
-- **AI Tool:** ChatGPT (used minimally for claryfying the concepts of timeline assistance otherwise all codes implementation, design and logics were manually written.)
 
 ---
 
