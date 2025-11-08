@@ -240,10 +240,7 @@ function GridLayout({ userSockets }: { userSockets: UserProps[] | [] }) {
       {requestData && (
         <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 bg-opacity-40">
           <div className="bg-white p-4 rounded-lg shadow-xl">
-            <p>
-              {requestData.userName} requests you to send the current game
-              session.
-            </p>
+            <p>{requestData.userName} wants to rejoin the game.</p>
             <div className="mt-3 flex gap-2">
               <button
                 className="hover:opacity-70 p-1 text-white rounded md: bg-green-500"

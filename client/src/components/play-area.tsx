@@ -136,9 +136,7 @@ function PlayArea() {
     // handleResize();
     window.addEventListener("resize", handleResize);
     window.addEventListener("beforeunload", handleResize);
-    const isConnected = JSON.stringify(localStorage.getItem("isConnected"));
-    console.log("isConnected", isConnected);
-    localStorage.setItem("isConnected", JSON.stringify(true));
+
     return () => {
       userSocket.close();
       requestGameSocket.close();
@@ -146,7 +144,6 @@ function PlayArea() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       sessionStorage.removeItem(`${name}${unique}`);
-      localStorage.setItem("isConnected", JSON.stringify(false));
     };
   }, []);
   const generateRandomHexColor = useCallback(() => {
