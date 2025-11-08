@@ -18,7 +18,6 @@
 </div>
 
 
-
 <div align='center'>
   
 <img width="1435" height="870" alt="canvas-mirror" src="https://github.com/user-attachments/assets/e656a285-8d66-4c60-81d7-bcf820f1b6c4" />
@@ -29,7 +28,7 @@
 
 
 
- <video src="https://github.com/user-attachments/assets/4797f0ab-32a0-4e24-bb95-92931e835b90"  /> 
+ <video src="https://github.com/user-attachments/assets/be40d23b-f725-47b6-a18f-c71e4eca943d"  /> 
 
 </div>
 
